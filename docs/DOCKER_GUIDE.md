@@ -330,27 +330,122 @@ volumes:
 
 ---
 
+<a id="build-image"></a>
 ## 自行构建镜像
 
+本仓库不包含 OpenClaw 应用源码，只保存汉化规则（`translations/`）和构建脚本。[Dockerfile](../Dockerfile) 也不编译源码：它只安装 `openclaw-runtime.tgz`（`npm pack` 生成的已汉化运行时），且 [.dockerignore](../.dockerignore) 用 `**` 屏蔽了其它所有文件。
+
+所以本地构建的正确顺序是：**先在本仓库根目录的 `openclaw/` 里完成“汉化 → 上游构建 → 打包”，再把 tgz 交给 Docker**。
+
+### 方式 A：复用已发布的 npm 运行时（不克隆上游，推荐）
+
+npm 上的 `@qingchencloud/openclaw-zh` 已是汉化并构建完成的运行时，可直接作为 Docker 输入。适合重建镜像、不改翻译的场景：
+
 ```bash
-# 1. 克隆汉化项目
-git clone https://github.com/1186258278/OpenClawChineseTranslation.git
 cd OpenClawChineseTranslation
 
-# 2. 克隆上游源码
-git clone https://github.com/openclaw/openclaw.git openclaw
+# 1. 拉取与 package.json 同版本的运行时包
+VERSION=$(node -p 'require("./package.json").version')
+mkdir -p docker-context
+npm pack "@qingchencloud/openclaw-zh@$VERSION" --ignore-scripts --pack-destination docker-context
+mv docker-context/qingchencloud-openclaw-zh-*.tgz docker-context/openclaw-runtime.tgz
 
-# 3. 应用汉化
+# 2. 组装构建上下文：只允许 tgz + Dockerfile + .dockerignore
+cp Dockerfile .dockerignore docker-context/
+
+# 3. 构建并验证（smoke 会真实启动 gateway 并检查 healthz / control-ui）
+docker build -t openclaw-zh:local docker-context
+bash scripts/smoke-docker.sh openclaw-zh:local "$VERSION"
+```
+
+> `--ignore-scripts` 只能用在 `npm pack` 上。Dockerfile 内的 `npm install` 必须执行安装脚本，否则 `tree-sitter-bash`、`koffi` 等原生依赖装不上。
+
+### 方式 B：从上游源码完整构建（需要自定义翻译）
+
+汉化规则命中的是上游 `src/` 下的源码文件，因此汉化必须发生在编译之前：
+
+```bash
+# 1. 克隆汉化项目，并在其根目录克隆上游源码（目录名必须是 openclaw）
+git clone https://github.com/1186258278/OpenClawChineseTranslation.git
+cd OpenClawChineseTranslation
+git clone --depth 1 --branch v2026.10.7 \
+  https://github.com/openclaw/openclaw.git openclaw   # nightly 则克隆 main 分支
+
+# 2. 应用汉化（规则作用于源码）
 npm run cli -- apply
 
-# 4. 构建 Docker 镜像
+# 3. 安装依赖并构建上游（完整子步骤见 .github/workflows/build-core.yml）
 cd openclaw
-docker build -t openclaw-zh:local .
+pnpm install --no-frozen-lockfile
+pnpm canvas:a2ui:bundle
+if [ -f scripts/tsdown-build.mts ]; then node --import tsx scripts/tsdown-build.mts; else node scripts/tsdown-build.mjs; fi
+node scripts/runtime-postbuild.mjs
+pnpm ui:build
+cd ..
+# 上游若新增了 build-stamp / plugins:assets:* / write-build-info 等脚本，
+# 需按 build-core.yml 的顺序一并执行；直接跑上游 pnpm build 常因上游类型错误中断。
 
-# 5. 运行
-docker run -d --name openclaw -p 18789:18789 \
+# 4. 注入功能面板（作用于 dist/control-ui 产物，必须在 ui:build 之后）
+python3 scripts/inject_panel.py
+
+# 5. 改写发布清单：包名改为 @qingchencloud/openclaw-zh，
+#    并把 workspace:* 依赖固定为 npm 可安装的版本
+node scripts/prepare-publish-package.mjs \
+  openclaw/package.json 2026.10.7-zh.1 2026.10.7 stable
+
+# 6. 同步 dist/ 中的 self-reference，否则运行时报 Cannot find package 'openclaw'
+find openclaw/dist -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 | \
+  xargs -0 sed -i -E 's#(from |import |import\(|require\()"openclaw(["/])#\1"@qingchencloud/openclaw-zh\2#g'
+
+# 7. 打包独立运行时（在拷贝/传产物之前执行，保留软链接与权限）
+mkdir -p docker-context
+(cd openclaw && npm pack --ignore-scripts --pack-destination ../docker-context)
+mv docker-context/qingchencloud-openclaw-zh-*.tgz docker-context/openclaw-runtime.tgz
+
+# 8. 组装构建上下文并构建镜像
+cp Dockerfile .dockerignore docker-context/
+docker build -t openclaw-zh:local docker-context
+bash scripts/smoke-docker.sh openclaw-zh:local 2026.10.7-zh.1
+
+# 9. 运行
+docker run -d --name openclaw -p 127.0.0.1:18789:18789 \
+  -e OPENCLAW_GATEWAY_TOKEN="$(openssl rand -hex 32)" \
   -v openclaw-data:/root/.openclaw openclaw-zh:local
 ```
+
+> 不要 `cd openclaw && docker build .`：那样会命中上游自带的 Dockerfile，跳过 pack 产物路径、包名改写和功能面板注入。版本号需满足稳定版校验 `<上游版本>-zh.<序号>`。
+
+### 方式 A 的自动化：每天检查上游更新并重建
+
+[scripts/docker-autobuild.sh](../scripts/docker-autobuild.sh) 把方式 A 做成可重复执行的定时任务：查询 npm 上 `@qingchencloud/openclaw-zh` 的 `latest`（或 `nightly`）发行版本，与 `docker-image/.built-version` 比对；只有版本变化才重新下载运行时包、构建镜像，并把镜像导出到 `docker-image/openclaw-zh-<版本>.tar.gz`（默认保留最近 3 个）。
+
+```bash
+# 手动跑一次（无更新时会直接跳过）
+NPM_MIRROR=https://registry.npmmirror.com \
+APT_MIRROR=http://mirrors.tuna.tsinghua.edu.cn \
+bash scripts/docker-autobuild.sh
+
+# 每天 06:00 触发（crontab 无权限时可用 systemd user timer）
+mkdir -p ~/.config/systemd/user
+# openclaw-zh-autobuild.service / openclaw-zh-autobuild.timer 见下
+systemctl --user enable --now openclaw-zh-autobuild.timer
+loginctl enable-linger "$USER"      # 未登录也触发
+```
+
+`openclaw-zh-autobuild.timer` 用 `OnCalendar=*-*-* 06:00:00` + `Persistent=true`（错过时间点会在开机后补跑），`openclaw-zh-autobuild.service` 为 `Type=oneshot`，`ExecStart=/usr/bin/env bash <repo>/scripts/docker-autobuild.sh`。日志：`journalctl --user -u openclaw-zh-autobuild.service`。
+
+国内网络下建议带上两个换源变量（脚本只改 `docker-context/Dockerfile` 副本，不动仓库里的 [Dockerfile](../Dockerfile)）：`NPM_MIRROR` 让镜像内 `npm install` 走 npm 镜像站，`APT_MIRROR` 让 apt 走 Debian 镜像站。官方源限速时，构建会卡在 `apt-get install` 或 `npm install` 数十分钟。
+
+### 本地构建常见错误
+
+| 现象 | 原因 |
+|------|------|
+| `EUNSUPPORTEDPROTOCOL` | 漏了第 5 步，`package.json` 里仍有 `workspace:*` 依赖 |
+| `Cannot find package 'openclaw'` | 漏了第 6 步 dist 内的 self-reference 替换 |
+| Dashboard 没有汉化功能面板 | 第 4 步在 `ui:build` 之前执行了 |
+| 容器内原生模块报错 / `node-gyp-build: not found` | 安装时加了 `--ignore-scripts`，或把 `node_modules` 直接 COPY 进了镜像 |
+
+本地只能构建当前机器架构的镜像；发布用的 amd64 + arm64 双架构镜像由 [docker-publish.yml](../.github/workflows/docker-publish.yml) 在两种架构上分别构建并验证。
 
 <p align="right"><a href="#top">回到顶部</a></p>
 
