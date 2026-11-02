@@ -13,8 +13,12 @@
 
 services:
   openclaw:
-    # 国内用户可替换为: 1186258278/openclaw-zh:nightly（Docker Hub 加速）
-    image: ghcr.io/1186258278/openclaw-zh:nightly
+    # 本地构建的镜像：scripts/docker-autobuild.sh 或 docs/DOCKER_GUIDE.md 方式 A
+    # 会同时打 openclaw-zh:<版本> 和 openclaw-zh:local，这里用 local 作为稳定入口。
+    # 镜像不在本机时先导入：docker load -i docker-image/openclaw-zh-<版本>.tar.gz
+    # 想用官方发布镜像改回：ghcr.io/1186258278/openclaw-zh:nightly
+    #（国内加速：1186258278/openclaw-zh:nightly）
+    image: openclaw-zh:local
     container_name: openclaw
     ports:
       - "18789:18789"
