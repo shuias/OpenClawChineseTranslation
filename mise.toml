@@ -1,0 +1,6 @@
+# 本项目统一使用 mise 管理运行时（mise.toml 会被 mise 自动读取）
+# node 固定为 24.22.1：与 Dockerfile 的基础镜像 node:24.22.1-slim、
+# CI 里 workflows 的 NODE_VERSION: '24.22.1' 保持一致；
+# package.json 的 engines 要求 node >=22.19.0。
+[tools]
+node = "24.22.1"
