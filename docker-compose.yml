@@ -23,8 +23,11 @@ services:
     ports:
       - "18789:18789"
     volumes:
-      # 数据持久化（注意：容器以 root 用户运行，配置存储在 /root/.openclaw）
-      - openclaw-data:/root/.openclaw
+      # 数据持久化。镜像以非 root 的 node 用户运行（UID 1000），
+      # 配置目录是 /home/node/.openclaw（不是 /root/.openclaw）。
+      # 若卷内容来自旧的 root 镜像，需先修正属主：
+      #   docker run --rm -v openclaw-data:/d node:26.12.1-bookworm-slim chown -R 1000:1000 /d
+      - openclaw-data:/home/node/.openclaw
     environment:
       # 访问令牌（推荐设置，用于 Dashboard 认证）
       # 建议创建 .env 文件设置: OPENCLAW_GATEWAY_TOKEN=your-secure-token

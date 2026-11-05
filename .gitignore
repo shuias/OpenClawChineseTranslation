@@ -48,6 +48,7 @@ Dockerfile.test
 
 # 本地 docker 构建上下文与导出的镜像包（scripts/docker-autobuild.sh 产物）
 docker-context/
+docker-context-src/
 docker-image/
 
 # 本地测试配置目录

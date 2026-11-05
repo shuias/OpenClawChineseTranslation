@@ -1,6 +1,9 @@
 # 本项目统一使用 mise 管理运行时（mise.toml 会被 mise 自动读取）
-# node 固定为 24.22.1：与 Dockerfile 的基础镜像 node:24.22.1-slim、
-# CI 里 workflows 的 NODE_VERSION: '24.22.1' 保持一致；
-# package.json 的 engines 要求 node >=22.19.0。
+# node 固定为 26.12.1：与 Dockerfile.source 的 node:26.12.1-bookworm(-slim)
+# 一致，也是 openclaw 上游 engines 推荐的最新支持版本。
+# 注意：Node 25+ 官方镜像不再内置 corepack，镜像内 pnpm 由 npm 直装
+# （见 Dockerfile.source）；本机 pnpm 仍由 corepack 按 openclaw/package.json
+# 的 packageManager 字段提供。
+# 旧的 npm 包构建路径（Dockerfile）仍使用 node:24.22.1-slim。
 [tools]
-node = "24.22.1"
+node = "26.12.1"

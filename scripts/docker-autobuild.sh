@@ -14,6 +14,7 @@
 #   APT_MIRROR            给镜像内 apt 换源，如 http://mirrors.tuna.tsinghua.edu.cn
 #   SKIP_SMOKE=1          跳过 smoke 验证（本机没有 node 时会自动跳过）
 #   KEEP_IMAGES           保留最近几个 tar（默认 3，0 表示不清理）
+#   BUILD_MODE            npm（默认，从 npm 包构建）或 source（从 openclaw/ 源码构建，Node 26）
 # ============================================================
 set -euo pipefail
 
@@ -91,6 +92,35 @@ prune_old_archives() {
   done
 }
 
+# ------------------------------------------------------------------
+# 源码模式：对齐 openclaw/ 源码到目标版本 → 重新生成渠道元数据 → 应用汉化
+# → 调用 scripts/docker-build-from-source.sh（Node 26 源码构建）
+# 说明：元数据必须在 apply 之前重新生成，否则 apply 内的旧逻辑会把
+#       渠道默认配置回退成英文。
+# ------------------------------------------------------------------
+build_from_source() {
+  local version="$1" tag="v$1"
+  [ -d "$REPO_ROOT/openclaw/.git" ] || { log "openclaw/ 不是 git 仓库，无法源码构建"; return 1; }
+
+  log "同步源码到 $tag"
+  git -C "$REPO_ROOT/openclaw" fetch --tags --force origin || { log "fetch 失败"; return 1; }
+  git -C "$REPO_ROOT/openclaw" checkout -f "$tag" || { log "检出 $tag 失败（tag 不存在？）"; return 1; }
+
+  log "重新生成 bundled channel config 元数据"
+  ( cd "$REPO_ROOT/openclaw" && node --import tsx scripts/generate-bundled-channel-config-metadata.ts ) \
+    || { log "元数据生成失败"; return 1; }
+
+  log "应用汉化补丁"
+  ( cd "$REPO_ROOT" && node cli/index.mjs apply ) || { log "汉化应用失败"; return 1; }
+
+  log "源码构建镜像"
+  VERSION="$version" OUT_DIR="$OUT_DIR" \
+    bash "$REPO_ROOT/scripts/docker-build-from-source.sh" || return 1
+
+  printf '%s\n' "$version" > "$STATE_FILE"
+  log "完成（源码模式）：$version"
+}
+
 main() {
   local version current
   version="$(latest_version || true)"
@@ -107,6 +137,13 @@ main() {
   fi
 
   log "检测到新版本 $current -> $version，开始构建"
+
+  if [ "${BUILD_MODE:-npm}" = "source" ]; then
+    build_from_source "$version"
+    prune_old_archives
+    return 0
+  fi
+
   download_tarball "$version" "$CTX_DIR/openclaw-runtime.tgz"
 
   # 构建上下文只允许 tgz + Dockerfile + .dockerignore（见 .dockerignore）
