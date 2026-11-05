@@ -1,0 +1,7 @@
+{
+  "file": "packages/gateway-protocol/src/public-schema.ts",
+  "description": "gateway-protocol 公开导出 models.discover schema",
+  "replacements": {
+    "  ModelsProbeParamsSchema,\n  ModelsProbeResultSchema,\n  ModelsProbeTargetResultSchema,\n  SkillsStatusParamsSchema,\n  ToolsCatalogParamsSchema,\n  GitHubIdentitySourceSchema,\n": "  ModelsProbeParamsSchema,\n  ModelsProbeResultSchema,\n  ModelsProbeTargetResultSchema,\n  ModelsDiscoverParamsSchema,\n  ModelsDiscoverResultSchema,\n  SkillsStatusParamsSchema,\n  ToolsCatalogParamsSchema,\n  GitHubIdentitySourceSchema,\n"
+  }
+}

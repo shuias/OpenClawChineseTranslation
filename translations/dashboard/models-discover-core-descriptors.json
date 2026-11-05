@@ -1,0 +1,7 @@
+{
+  "file": "src/gateway/methods/core-descriptors.ts",
+  "description": "gateway 注册 models.discover 方法描述符",
+  "replacements": {
+    "    SIDECAR_CONTROL_PLANE_WRITE,\n  ],\n  [\"models.probe\", \"models-probe\", \"operator.admin\", \"<=2026.7\"],\n  // Memory migration reads host assistant state and writes agent workspaces.\n  [\"migrations.memory.plan\", \"migrations\", \"operator.admin\", \"2026.7\"],\n  [\"migrations.memory.apply\", \"migrations\", \"operator.admin\", \"2026.7\", CONTROL_PLANE_WRITE],\n": "    SIDECAR_CONTROL_PLANE_WRITE,\n  ],\n  [\"models.probe\", \"models-probe\", \"operator.admin\", \"<=2026.7\"],\n  [\"models.discover\", \"models-discover\", \"operator.admin\", \"<=2026.7\"],\n  // Memory migration reads host assistant state and writes agent workspaces.\n  [\"migrations.memory.plan\", \"migrations\", \"operator.admin\", \"2026.7\"],\n  [\"migrations.memory.apply\", \"migrations\", \"operator.admin\", \"2026.7\", CONTROL_PLANE_WRITE],\n"
+  }
+}

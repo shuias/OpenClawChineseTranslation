@@ -1,0 +1,7 @@
+{
+  "file": "src/gateway/server-methods-list.test-fixtures.ts",
+  "description": "gateway 方法清单夹具加入 models.discover",
+  "replacements": {
+    "openclaw.setup.verify environments.create environments.destroy sessions.catalog.list\nsessions.catalog.read terminal.upload sessions.catalog.continue sessions.catalog.archive\napproval.get approval.resolve sessions.search sessions.dispatch sessions.reclaim models.probe\nmigrations.memory.plan migrations.memory.apply ui.command approval.history\nplugin.surface.refresh conversations.list session.discussion.info session.discussion.open\nboard.prompt.authorize board.data.read board.action sessions.observer.visibility\n": "openclaw.setup.verify environments.create environments.destroy sessions.catalog.list\nsessions.catalog.read terminal.upload sessions.catalog.continue sessions.catalog.archive\napproval.get approval.resolve sessions.search sessions.dispatch sessions.reclaim models.probe\nmodels.discover\nmigrations.memory.plan migrations.memory.apply ui.command approval.history\nplugin.surface.refresh conversations.list session.discussion.info session.discussion.open\nboard.prompt.authorize board.data.read board.action sessions.observer.visibility\n"
+  }
+}

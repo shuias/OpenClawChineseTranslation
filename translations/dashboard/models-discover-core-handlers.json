@@ -1,0 +1,7 @@
+{
+  "file": "src/gateway/server-methods/core-handlers.ts",
+  "description": "gateway 注册 models-discover 懒加载 handler",
+  "replacements": {
+    "    import(\"./models-auth-order.js\").then((module) => module.modelsAuthOrderHandlers),\n  models: () => import(\"./models.js\").then((module) => module.modelsHandlers),\n  \"models-probe\": () => import(\"./models-probe.js\").then((module) => module.modelsProbeHandlers),\n  \"web-search\": () => import(\"./web-search.js\").then((module) => module.webSearchHandlers),\n  \"native-hook-relay\": () =>\n    import(\"./native-hook-relay.js\").then((module) => module.nativeHookRelayHandlers),\n": "    import(\"./models-auth-order.js\").then((module) => module.modelsAuthOrderHandlers),\n  models: () => import(\"./models.js\").then((module) => module.modelsHandlers),\n  \"models-probe\": () => import(\"./models-probe.js\").then((module) => module.modelsProbeHandlers),\n  \"models-discover\": () =>\n    import(\"./models-discover.js\").then((module) => module.modelsDiscoverHandlers),\n  \"web-search\": () => import(\"./web-search.js\").then((module) => module.webSearchHandlers),\n  \"native-hook-relay\": () =>\n    import(\"./native-hook-relay.js\").then((module) => module.nativeHookRelayHandlers),\n"
+  }
+}

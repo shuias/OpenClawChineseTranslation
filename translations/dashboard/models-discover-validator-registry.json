@@ -1,0 +1,7 @@
+{
+  "file": "packages/gateway-protocol/src/validator-registry.ts",
+  "description": "gateway-protocol 注册 models.discover 参数校验器",
+  "replacements": {
+    "export const validateExecApprovalsNodeSnapshot = compile(S.ExecApprovalsNodeSnapshotSchema);\nexport const validateLogsTailParams = compile(S.LogsTailParamsSchema);\nexport const validateModelsProbeParams = compile(S.ModelsProbeParamsSchema);\nexport const validateChatHistoryParams = compile(S.ChatHistoryParamsSchema);\nexport const validateChatStartupParams = compile(S.ChatStartupParamsSchema);\nexport const validateChatMetadataParams = compile(S.ChatMetadataParamsSchema);\n": "export const validateExecApprovalsNodeSnapshot = compile(S.ExecApprovalsNodeSnapshotSchema);\nexport const validateLogsTailParams = compile(S.LogsTailParamsSchema);\nexport const validateModelsProbeParams = compile(S.ModelsProbeParamsSchema);\nexport const validateModelsDiscoverParams = compile(S.ModelsDiscoverParamsSchema);\nexport const validateChatHistoryParams = compile(S.ChatHistoryParamsSchema);\nexport const validateChatStartupParams = compile(S.ChatStartupParamsSchema);\nexport const validateChatMetadataParams = compile(S.ChatMetadataParamsSchema);\n"
+  }
+}

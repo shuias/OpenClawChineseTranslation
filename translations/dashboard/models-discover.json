@@ -1,0 +1,9 @@
+{
+  "description": "Gateway 新增 models.discover 方法：从任意 OpenAI 兼容端点拉取模型列表",
+  "copyFiles": [
+    {
+      "source": "dashboard/models-discover.ts",
+      "target": "src/gateway/server-methods/models-discover.ts"
+    }
+  ]
+}

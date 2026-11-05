@@ -1,0 +1,7 @@
+{
+  "file": "ui/src/api/types.ts",
+  "description": "Control UI 导出 ModelsDiscoverResult 类型",
+  "replacements": {
+    "  ToolsEffectiveEntry,\n  ToolsEffectiveResult,\n  ModelsProbeResult,\n  SystemAgentSetupActivateParams,\n  SystemAgentSetupActivateResult,\n  SystemAgentSetupDetectResult,\n": "  ToolsEffectiveEntry,\n  ToolsEffectiveResult,\n  ModelsProbeResult,\n  ModelsDiscoverResult,\n  SystemAgentSetupActivateParams,\n  SystemAgentSetupActivateResult,\n  SystemAgentSetupDetectResult,\n"
+  }
+}
