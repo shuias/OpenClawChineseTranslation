@@ -353,7 +353,9 @@
     ],
     "plugins": [
       "plugins/provider-auth-mode.json",
-      "plugins/provider-auth-ref.json"
+      "plugins/provider-auth-ref.json",
+      "plugins/plugin-api-zh-suffix.json",
+      "plugins/host-version-zh-suffix.json"
     ],
     "config": [
       "config/schema-dynamic-hints.json"

@@ -1,0 +1,7 @@
+{
+  "file": "src/plugins/package-compat.ts",
+  "description": "插件 API 兼容校验：把汉化版本号后缀 -zh.N 归一化为上游发布版本（如 2026.10.9-zh.1 → 2026.10.9）",
+  "replacements": {
+    "(?:-\\d+|-(?:alpha|beta|rc)\\.\\d+)$/i": "(?:-\\d+|-(?:alpha|beta|rc|zh)\\.\\d+)$/i"
+  }
+}

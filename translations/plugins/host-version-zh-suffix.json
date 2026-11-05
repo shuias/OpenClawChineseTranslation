@@ -1,0 +1,8 @@
+{
+  "file": "src/infra/semver.ts",
+  "description": "宿主版本比较：把汉化后缀 -zh.N 视作上游同版本的本地修订，使 minHostVersion 下限校验不再把 2026.10.9-zh.1 判为低版本",
+  "replacements": {
+    "  return version.prerelease.length === 1 && typeof version.prerelease[0] === \"number\";": "  return (\n    (version.prerelease.length === 1 && typeof version.prerelease[0] === \"number\") ||\n    (version.prerelease.length === 2 &&\n      version.prerelease[0] === \"zh\" &&\n      typeof version.prerelease[1] === \"number\")\n  );",
+    "    return `${version.major}.${version.minor}.${version.patch}+${version.prerelease[0]}`;": "    return `${version.major}.${version.minor}.${version.patch}+${version.prerelease.join(\".\")}`;"
+  }
+}
