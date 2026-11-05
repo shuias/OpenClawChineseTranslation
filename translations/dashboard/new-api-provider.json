@@ -1,0 +1,9 @@
+{
+  "description": "Control UI 新增自定义 OpenAI 兼容提供商（new-api）表单组件",
+  "copyFiles": [
+    {
+      "source": "dashboard/new-api-provider.ts",
+      "target": "ui/src/pages/model-providers/new-api-provider.ts"
+    }
+  ]
+}

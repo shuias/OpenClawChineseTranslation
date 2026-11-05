@@ -1,0 +1,10 @@
+{
+  "file": "ui/src/pages/model-providers/view.ts",
+  "description": "Dashboard 模型提供商：new-api 自定义提供商入口与对话框",
+  "replacements": {
+    "import { MODEL_PROVIDERS_COST_DAYS } from \"./load.ts\";\nimport {": "import { MODEL_PROVIDERS_COST_DAYS } from \"./load.ts\";\nimport { renderNewApiProvider, type NewApiProviderMessage } from \"./new-api-provider.ts\";\nimport {",
+    "    addProviderOpen: boolean;\n    addProviderId: string;\n    addProviderKey: string;": "    addProviderOpen: boolean;\n    addProviderId: string;\n    addProviderKey: string;\n    newApiOpen: boolean;\n    newApiProviderId: string;\n    newApiBaseUrl: string;\n    newApiKey: string;\n    newApiModels: string;\n    newApiBusy: boolean;\n    newApiMessage: NewApiProviderMessage | null;\n    onNewApiToggle: () => void;\n    onNewApiProviderIdChange: (value: string) => void;\n    onNewApiBaseUrlChange: (value: string) => void;\n    onNewApiKeyChange: (value: string) => void;\n    onNewApiModelsChange: (value: string) => void;\n    onNewApiSave: () => void;",
+    "        actions: html`\n          ${props.providerScope}": "        actions: html`\n          ${props.providerScope}\n          <button\n            type=\"button\"\n            class=\"btn btn--sm\"\n            ?disabled=${configMutationDisabled(props)}\n            title=${props.mutationBlockedReason ?? nothing}\n            @click=${props.onNewApiToggle}\n          >\n            添加自定义提供商\n          </button>",
+    "  `)}${renderAddProvider(props)}`;": "  `)}${renderAddProvider(props)}${renderNewApiProvider({\n    open: props.newApiOpen,\n    providerId: props.newApiProviderId,\n    baseUrl: props.newApiBaseUrl,\n    apiKey: props.newApiKey,\n    models: props.newApiModels,\n    busy: props.newApiBusy,\n    disabled: configMutationDisabled(props),\n    message: props.newApiMessage,\n    onToggle: props.onNewApiToggle,\n    onProviderIdChange: props.onNewApiProviderIdChange,\n    onBaseUrlChange: props.onNewApiBaseUrlChange,\n    onApiKeyChange: props.onNewApiKeyChange,\n    onModelsChange: props.onNewApiModelsChange,\n    onSave: props.onNewApiSave,\n  })}`;"
+  }
+}

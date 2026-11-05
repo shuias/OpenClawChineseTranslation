@@ -251,7 +251,10 @@
       "dashboard/schema-labels-approvals.json",
       "dashboard/gateway-browser-socket-v2026.10.5.json",
       "dashboard/chat-commands-v2026.10.5.json",
-      "dashboard/lobster-pet-lore-v2026.10.5.json"
+      "dashboard/lobster-pet-lore-v2026.10.5.json",
+      "dashboard/new-api-provider.json",
+      "dashboard/model-providers-new-api-view.json",
+      "dashboard/model-providers-new-api-page.json"
     ],
     "extensions": [
       "extensions/feishu.json",
