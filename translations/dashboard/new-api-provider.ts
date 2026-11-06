@@ -1,4 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit";
+import "../../styles/model-setup.css";
 
 export type NewApiProviderMessage = {
   kind: "success" | "warning" | "error";
@@ -134,11 +135,15 @@ export function renderNewApiProvider(
         }
       }}
     >
-      <div class="model-setup-wizard" data-new-api-provider-dialog>
+      <div
+        class="model-setup-wizard"
+        data-new-api-provider-dialog
+        style="height: min(720px, calc(100dvh - 48px)); grid-template-rows: auto minmax(0, 1fr) auto;"
+      >
         <div class="model-setup-wizard__header">
           <h2>自定义模型提供商（OpenAI 兼容）</h2>
         </div>
-        <div class="model-setup-wizard__body">
+        <div class="model-setup-wizard__body" style="min-height: 0;">
           <p>
             适用于 new-api、LiteLLM 等 OpenAI 兼容网关。保存后会写入
             <code>models.providers.&lt;ID&gt;</code>，然后可在「默认模型」中选择使用。
@@ -201,7 +206,7 @@ export function renderNewApiProvider(
           </label>
           ${renderMessage(props.message)}
         </div>
-        <div class="model-setup-wizard__footer">
+        <div class="model-setup-wizard__footer" style="background: var(--panel);">
           <button class="btn" ?disabled=${props.busy} @click=${props.onToggle}>取消</button>
           <button class="btn primary" ?disabled=${!canSave} @click=${props.onSave}>
             ${props.busy ? "保存中…" : "保存"}
