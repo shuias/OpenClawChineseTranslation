@@ -1,0 +1,9 @@
+{
+  "description": "新增文件：多模型自定义提供商（openai-completions）逐模型连通性探测 helper",
+  "copyFiles": [
+    {
+      "source": "dashboard/models-probe-custom.ts",
+      "target": "src/gateway/server-methods/models-probe-custom.ts"
+    }
+  ]
+}

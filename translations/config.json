@@ -262,7 +262,10 @@
       "dashboard/models-discover-ui-api-types.json",
       "dashboard/new-api-provider.json",
       "dashboard/model-providers-new-api-view.json",
-      "dashboard/model-providers-new-api-page.json"
+      "dashboard/model-providers-new-api-page.json",
+      "dashboard/models-probe-max-tokens.json",
+      "dashboard/models-probe-custom.json",
+      "dashboard/models-probe-per-model.json"
     ],
     "extensions": [
       "extensions/feishu.json",

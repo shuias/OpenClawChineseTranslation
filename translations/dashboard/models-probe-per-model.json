@@ -1,0 +1,8 @@
+{
+  "file": "src/gateway/server-methods/models-probe.ts",
+  "description": "models.probe 接入逐模型探测：models.providers 下配置了 2 个以上模型的 openai-completions 自定义提供商，逐模型探测并返回每模型状态",
+  "replacements": {
+    "import { resolveModelAuthAgentScope } from \"./model-auth-agent-scope.js\";": "import { resolveModelAuthAgentScope } from \"./model-auth-agent-scope.js\";\nimport { probeCustomProviderModels } from \"./models-probe-custom.js\";",
+    "      const workspaceDir = resolveAgentWorkspaceDir(cfg, scope.agentId);": "      const workspaceDir = resolveAgentWorkspaceDir(cfg, scope.agentId);\n      const customResults = await probeCustomProviderModels({ cfg, provider, timeoutMs });\n      if (customResults) {\n        respond(true, mapProbeResult(provider, customResults), undefined);\n        return;\n      }"
+  }
+}

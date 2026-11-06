@@ -1,0 +1,7 @@
+{
+  "file": "src/gateway/server-methods/models-probe.ts",
+  "description": "模型连通性探测 max_tokens 从 8 提高到 128，兼容思考模型（reasoning 消耗输出 token 后才有可见回复）",
+  "replacements": {
+    "const PROBE_MAX_TOKENS = 8;": "const PROBE_MAX_TOKENS = 128;"
+  }
+}
