@@ -24,6 +24,7 @@ untranslated_list.txt
 # =====================================
 .idea/
 .vscode/
+.trae/
 *.swp
 *.swo
 *~
