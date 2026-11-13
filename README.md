@@ -29,6 +29,7 @@
 [网关重启](#gateway-restart) ·
 [卸载教程](#uninstall) ·
 [更新升级](#upgrade) ·
+[本仓库定制功能](#custom-features) ·
 [Docker 部署](#docker) ·
 [其他安装方式](#other-install) ·
 [手机端 ClawApp](#mobile) ·
@@ -363,6 +364,39 @@ npm update -g @qingchencloud/openclaw-zh
 |------|----------|------|
 | **稳定版** | `npm install -g @qingchencloud/openclaw-zh@latest` | 经过测试，推荐使用 |
 | **最新版** | `npm install -g @qingchencloud/openclaw-zh@nightly` | 每小时同步上游，体验新功能 |
+
+<p align="right"><a href="#top">回到顶部</a></p>
+
+---
+
+<a id="custom-features"></a>
+
+## 本仓库定制功能
+
+> 除完整汉化外，本仓库在上游基础上额外提供以下定制功能，均已内置于汉化发行包与源码构建镜像。英文说明见 [README.en.md](README.en.md)。
+
+### new-api 自定义模型提供商（Control UI）
+
+- 网页控制台 **模型 → 提供商** 页面新增「new-api 自定义提供商」向导，可直接填写 Base URL 与 API Key 接入 new-api / OpenAI 兼容网关。
+- **自动查询模型**：填写地址与密钥后点击「测试连接并查询模型」，自动读取提供商 `/models` 端点的模型列表，勾选后一键添加。
+- **连通性验证**：保存后自动探测模型连通性；提供商卡片上可随时点击「测试连接」复查。
+
+### 逐模型连通性探测
+
+- 对配置了 **2 个及以上模型** 的自定义提供商，「测试连接」会逐模型探测，每个模型分别显示状态与延迟（上游仅探测单个代表模型）。
+- 探测请求的 `max_tokens` 为 128，兼容思考模型（如 Qwen3 系列，思考过程会先消耗输出 token）。
+
+### 插件汉化版本兼容
+
+- 插件宿主版本校验识别汉化版版本号的 `-zh` 后缀（如 `2026.10.9-zh.1`），安装/更新官方插件不再误报版本不兼容。
+
+### 本地镜像构建与运维
+
+- [Dockerfile.source](Dockerfile.source)：从源码构建 Node 26 运行时镜像，并以非 root 用户运行。
+- [scripts/docker-build-from-source.sh](scripts/docker-build-from-source.sh)：一键从源码构建 `openclaw-zh:local` 镜像。
+- [scripts/docker-autobuild.sh](scripts/docker-autobuild.sh)：每日自动构建本地镜像。
+- [docker-compose.yml](docker-compose.yml) 默认使用本地构建镜像；[mise.toml](mise.toml) 固定本地 Node 版本；[env.example](env.example) 提供环境变量样例。
+- 完整流程见 [Docker 部署指南](docs/DOCKER_GUIDE.md) 与 [本地运维指南](docs/DOCKER_OPS_GUIDE.html)。
 
 <p align="right"><a href="#top">回到顶部</a></p>
 
